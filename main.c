@@ -25,12 +25,12 @@ typedef enum ColorType {
 }COLOR;
 enum Block {
     BlockSolid = 100,
-    BlockWeak,
+    BlockWeak=101
 }BLOCK;
 enum Item {
     ItemHeart = 200,
-    ItemBomb,
-    ItemPower
+    ItemBomb = 201,
+    ItemPower = 202
 } ITEM;
 enum Bomb {
     BombFour = 300,
@@ -45,7 +45,7 @@ enum Bomb {
 } BOMB;
 enum Pc {
     PcNormal = 400,
-    PcOnBomb
+    PcOnBomb = 401
 } PC;
 enum Npc {
     NpcPattern = 500,
@@ -82,9 +82,11 @@ mainCharacterInfo MainCharacter;
 #define GBOARD_HEIGHT 15
 #define GBOARD_ORIGIN_X 4
 #define GBOARD_ORIGIN_Y 2
+int cnt_npc_pattern;
+int cnt_npc_nopattern;
 void drawingTotalMap();
 double TimeBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2];
-
+//플레이어가 물풍선닿았을 때 색깔 바뀌는
 int gameBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
     {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
     {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
@@ -108,14 +110,14 @@ int gameBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
 void firstTimeBoardInfo(double current_time, int x, int y)
 {
     TimeBoardInfo[y][x] = current_time;
-    printf("%d %d", x, y);
+   
 
 }
 void putBomb(int x, int y)
 {
     if (isBombNum(x, y) == 1)
     {
-        printf("%d %d",x,y);
+       
         gameBoardInfo[y][(x)] = 300;
         time_t start = time(NULL);
         double current_time = (double)start;
@@ -144,13 +146,192 @@ int isBombNum(int x, int y)
 int  isMiddleBomb(int i, int j)
 
 {
-    if (gameBoardInfo[i][j] >= BombFour && gameBoardInfo[i][j] <= BombZero)
+    if (gameBoardInfo[i][j] >= BombFour && gameBoardInfo[i][j] <= BombOne2)
     {
         return 1;
     }
     else return 0;
 
 }
+
+int isFinalBomb(int i, int j)
+{
+    if (gameBoardInfo[i][j] == BombOne2)
+    {
+        return 1;
+    }
+    else return 0;
+}
+int isWaterLine(int i, int j)
+{
+    if (gameBoardInfo[i][j] == BombZero)
+        return 1;
+    else return 0;
+
+}
+int  detectCharacter(int i, int j)
+{
+    if (gameBoardInfo[i][j] == 400|| gameBoardInfo[i][j] == 401)
+    {
+        MainCharacter.hp--;
+        printf("캐릭터hp:%d", MainCharacter.hp);
+        gameBoardInfo[i][j] = 401;
+
+        return 1;
+    }
+    if (gameBoardInfo[i][j] == 500 || gameBoardInfo[i][j] == 501)
+    {
+        if (gameBoardInfo[i][j] == 500)
+        {
+            cnt_npc_pattern--;
+        }
+        if (gameBoardInfo[i][j] == 501)
+        {
+            cnt_npc_nopattern--;
+        }
+        gameBoardInfo[i][j] = 0;
+    }
+    return 0;
+}
+int detectBlock(int i, int j)
+{
+    if (gameBoardInfo[i][j] == BlockWeak) {
+
+        
+        return 0;
+    }
+    if (gameBoardInfo[i][j] == BlockSolid)return 1;
+
+
+
+    return 0;
+}
+int makeRandomItem()
+{
+    int ran = rand() % 3;
+    int itemN = 200 + ran;
+    return itemN;
+}
+void explosion()
+{
+    for (int i = 0; i < 17; i++)
+    {
+        for (int j = 0; j < 17; j++)
+        {
+            if (isWaterLine(i, j) == 1)
+            {
+                gameBoardInfo[i][j] = 0;
+            }
+        }
+    }
+  
+    for (int i = 0; i < 17; i++)
+    {
+        for (int j = 0; j < 17; j++)
+        {
+          
+            
+            if(isFinalBomb(i,j)==1)
+            {
+                MainCharacter.bombNum--;
+                if(detectCharacter(i, j)==0)
+                gameBoardInfo[i][j] = BombZero;
+                for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
+                {
+
+                    if ((detectCharacter(i, j + x) == 0 && (detectBlock(i,j+x)==0) && gameBoardInfo[i][j + x] == 0) || gameBoardInfo[i][j + x] == BlockWeak)
+                    {
+                        if (gameBoardInfo[i][j + x] == BlockWeak)
+                        {
+                            int ran = rand() % 3;
+                            if (ran == 0)
+                            {
+                                gameBoardInfo[i][j + x] = makeRandomItem();
+                            }
+                        }
+                        if (gameBoardInfo[i][j + x]<ItemHeart || gameBoardInfo[i][j +x]>ItemPower)
+                        
+                        gameBoardInfo[i][j + x] = BombZero;
+                        
+                          
+                        
+                       
+                    }
+                    else
+                        break;
+                }
+                for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
+                {
+
+                    if ((detectCharacter(i, j - x) == 0 && (detectBlock(i, j - x) == 0) && gameBoardInfo[i][j - x] == 0) || gameBoardInfo[i][j - x] == BlockWeak)
+                    {
+                        if (gameBoardInfo[i][j - x] == BlockWeak)
+                        {
+                            int ran = rand() % 3;
+                            if (ran == 0)
+                            {
+                                gameBoardInfo[i][j - x] = makeRandomItem();
+                            }
+                        }
+                        if(gameBoardInfo[i][j - x]<ItemHeart|| gameBoardInfo[i][j - x]>ItemPower)
+                        gameBoardInfo[i][j - x] = BombZero;
+                     
+                    }
+                    else
+                        break;
+                }
+                for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
+                {
+
+                    if ((detectCharacter(i + x, j) == 0 && (detectBlock(i + x, j) == 0 ) && gameBoardInfo[i + x][j] == 0) || gameBoardInfo[i + x][j] == BlockWeak)
+                    {
+                        if (gameBoardInfo[i+x][j] == BlockWeak)
+                        {
+                            int ran = rand() % 3;
+                            if (ran == 0)
+                            {
+                                gameBoardInfo[i+x][j] = makeRandomItem();
+                            }
+                        }
+                        if (gameBoardInfo[i+x][j]<ItemHeart || gameBoardInfo[i+x][j]>ItemPower)
+                        gameBoardInfo[i + x][j] = BombZero;
+                       
+                    }
+                    else
+                        break;
+                }
+                for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
+                {
+
+                    if ((detectCharacter(i - x, j) == 0 && (detectBlock(i - x, j) == 0) && gameBoardInfo[i - x][j] == 0) || gameBoardInfo[i - x][j] == BlockWeak)
+                    {
+                        if (gameBoardInfo[i -x][j] == BlockWeak)
+                        {
+                            int ran = rand() % 3;
+                            if (ran == 0)
+                            {
+                                gameBoardInfo[i -x][j] = makeRandomItem();
+                            }
+                        }
+                        if (gameBoardInfo[i -x][j]<ItemHeart || gameBoardInfo[i - x][j]>ItemPower)
+                        gameBoardInfo[i - x][j] = BombZero;
+                      
+                    }
+                    else
+                        break;
+                }
+                    
+                   
+                   
+                  
+                    
+
+                
+            }
+        }
+    }
+}
+
 void findChangingBomb(double current_time)
 {
     for (int i = 0; i < 17; i++)
@@ -161,12 +342,9 @@ void findChangingBomb(double current_time)
             {
 
 
-                if (current_time - TimeBoardInfo[i][j] >= 8)
-                {
-                    gameBoardInfo[i][j] = BombZero;
-                }
+               
 
-                if (current_time - TimeBoardInfo[i][j] >= 7 && current_time - TimeBoardInfo[i][j] < 8)
+                if (current_time - TimeBoardInfo[i][j] >= 7 )
                 {
                     gameBoardInfo[i][j] = BombOne2;
                 }
@@ -238,11 +416,12 @@ void RemoveCursor(void)
 
 }
 
+
+
 PC_pos* pc;
 NPC_pos_pattern* npc_pattern;
 NPC_pos_nopattern* npc_nopattern;
-int cnt_npc_pattern;
-int cnt_npc_nopattern;
+
 int abs(int n) {
     if (n < 0) return n * -1;
     else return n;
@@ -344,9 +523,10 @@ void move_nopattern_npc() {
     }
     return;
 }
-
+int before_key;
 void ProcessKeyInput() {
     int key;
+    
     for (int i = 0; i < 20; i++) {
         if (_kbhit() != 0) {
             key = _getch();
@@ -364,11 +544,24 @@ void ProcessKeyInput() {
                 move_pc(1, 0);
                 break;
             case 32:
-            putBomb(pc->pos.X + 1, pc->pos.Y);
-            break;
-            
+            {
+                if(before_key==77)
+                putBomb(pc->pos.X+1, pc->pos.Y);
+                if (before_key == 75)
+                    putBomb(pc->pos.X - 1, pc->pos.Y);
+                if (before_key == 72)
+                    putBomb(pc->pos.X, pc->pos.Y-1);
+                if (before_key == 80)
+                    putBomb(pc->pos.X, pc->pos.Y +1);
+                if (before_key == 0)
+                    putBomb(pc->pos.X, pc->pos.Y + 1);
+                break;
             }
+            }
+            
+            before_key = key;
         }
+       
         Sleep(20);
     }
     return;
@@ -391,12 +584,14 @@ int main() {
     MainCharacter.bombNum = 0;
     MainCharacter.plusBombNumItem = 10;
     MainCharacter.plusBombPowerItem = 4;
+    MainCharacter.hp = 3;
     drawingTotalMap();
     while (1) {
         time_t current_time = time(NULL);
         double time = (double)current_time;
         //printf("%lf", time);
         findChangingBomb(time);
+        explosion();
         ProcessKeyInput();
         move_pattern_npc();
         move_nopattern_npc();
@@ -456,6 +651,7 @@ void drawingTotalMap() {
                     break;
                 }
             }
+
             else if (300 <= gameBoardInfo[y][x] && gameBoardInfo[y][x] < 400) {
                 switch (gameBoardInfo[y][x]) {
                 case BombFour:
@@ -499,7 +695,9 @@ void drawingTotalMap() {
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
                     break;
                 case BombZero:
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), BLUE);
                     printf("※");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
                     break;
                 default:
                     break;
@@ -511,7 +709,10 @@ void drawingTotalMap() {
                     printf("♀");
                     break;
                 case PcOnBomb:
-                    printf("㉾");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), BLUE);
+                    printf("♀");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
+                   
                     break;
                 default:
                     break;
