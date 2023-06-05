@@ -360,87 +360,131 @@ void explosion()
                     gameBoardInfo[i][j] = BombZero;
                 for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
                 {
-
-                    if ((detectCharacter(i, j + x) == 0 && (detectBlock(i, j + x) == 0) && gameBoardInfo[i][j + x] == 0) || gameBoardInfo[i][j + x] == BlockWeak)
-                    {
-                        if (gameBoardInfo[i][j + x] == BlockWeak)
-                        {
-                            int ran = rand() % 3;
-                            if (ran == 0)
-                            {
-                                gameBoardInfo[i][j + x] = makeRandomItem();
-                            }
-                        }
-                        if (gameBoardInfo[i][j + x]<ItemHeart || gameBoardInfo[i][j + x]>ItemPower)
-
-                            gameBoardInfo[i][j + x] = BombZero;
-
-
-
-
-                    }
+                    if(gameBoardInfo[i][j+x]>=ItemHeart&& gameBoardInfo[i][j + x] <= ItemPower)
+                        gameBoardInfo[i][j + x] = BombZero;
                     else
-                        break;
+                    {
+                        if ((detectCharacter(i, j + x) == 0 && (detectBlock(i, j + x) == 0) && gameBoardInfo[i][j + x] == 0) || gameBoardInfo[i][j + x] == BlockWeak)
+                        {
+                            if (gameBoardInfo[i][j + x] == BlockWeak)
+                            {
+                                int ran = rand() % 3;
+                                if (ran == 0)
+                                {
+                                    gameBoardInfo[i][j + x] = makeRandomItem();
+
+                                }
+                                else
+                                {
+                                    gameBoardInfo[i][j + x] = BombZero;
+
+                                }
+                                break;
+
+                            }
+                            if (gameBoardInfo[i][j + x]<ItemHeart || gameBoardInfo[i][j + x]>ItemPower)
+
+                                gameBoardInfo[i][j + x] = BombZero;
+
+
+
+
+                        }
+                        else
+                            break;
+                    }
                 }
                 for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
                 {
-
-                    if ((detectCharacter(i, j - x) == 0 && (detectBlock(i, j - x) == 0) && gameBoardInfo[i][j - x] == 0) || gameBoardInfo[i][j - x] == BlockWeak)
-                    {
-                        if (gameBoardInfo[i][j - x] == BlockWeak)
-                        {
-                            int ran = rand() % 3;
-                            if (ran == 0)
-                            {
-                                gameBoardInfo[i][j - x] = makeRandomItem();
-                            }
-                        }
-                        if (gameBoardInfo[i][j - x]<ItemHeart || gameBoardInfo[i][j - x]>ItemPower)
-                            gameBoardInfo[i][j - x] = BombZero;
-
-                    }
+                    if (gameBoardInfo[i][j -x] >= ItemHeart && gameBoardInfo[i][j -x] <= ItemPower)
+                        gameBoardInfo[i][j - x] = BombZero;
                     else
-                        break;
+                    {
+                        if ((detectCharacter(i, j - x) == 0 && (detectBlock(i, j - x) == 0) && gameBoardInfo[i][j - x] == 0) || gameBoardInfo[i][j - x] == BlockWeak)
+                        {
+                            if (gameBoardInfo[i][j - x] == BlockWeak)
+                            {
+                                int ran = rand() % 3;
+                                if (ran == 0)
+                                {
+                                    gameBoardInfo[i][j - x] = makeRandomItem();
+
+                                }
+                                else
+                                {
+                                    gameBoardInfo[i][j - x] = BombZero;
+
+                                }
+                                break;
+                            }
+                            if (gameBoardInfo[i][j - x]<ItemHeart || gameBoardInfo[i][j - x]>ItemPower)
+                                gameBoardInfo[i][j - x] = BombZero;
+
+                        }
+                        else
+                            break;
+                    }
                 }
                 for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
                 {
-
-                    if ((detectCharacter(i + x, j) == 0 && (detectBlock(i + x, j) == 0) && gameBoardInfo[i + x][j] == 0) || gameBoardInfo[i + x][j] == BlockWeak)
-                    {
-                        if (gameBoardInfo[i + x][j] == BlockWeak)
-                        {
-                            int ran = rand() % 3;
-                            if (ran == 0)
-                            {
-                                gameBoardInfo[i + x][j] = makeRandomItem();
-                            }
-                        }
-                        if (gameBoardInfo[i + x][j]<ItemHeart || gameBoardInfo[i + x][j]>ItemPower)
-                            gameBoardInfo[i + x][j] = BombZero;
-
-                    }
+                    if (gameBoardInfo[i+x][j] >= ItemHeart && gameBoardInfo[i+x][j] <= ItemPower)
+                        gameBoardInfo[i+x][j] = BombZero;
                     else
-                        break;
+                    {
+                        if ((detectCharacter(i + x, j) == 0 && (detectBlock(i + x, j) == 0) && gameBoardInfo[i + x][j] == 0) || gameBoardInfo[i + x][j] == BlockWeak)
+                        {
+                            if (gameBoardInfo[i + x][j] == BlockWeak)
+                            {
+                                int ran = rand() % 3;
+                                if (ran == 0)
+                                {
+                                    gameBoardInfo[i + x][j] = makeRandomItem();
+
+                                }
+                                else
+                                {
+                                    gameBoardInfo[i + x][j] = BombZero;
+
+                                }
+                                break;
+                            }
+                            if (gameBoardInfo[i + x][j]<ItemHeart || gameBoardInfo[i + x][j]>ItemPower)
+                                gameBoardInfo[i + x][j] = BombZero;
+
+                        }
+                        else
+                            break;
+                    }
                 }
                 for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
                 {
-
-                    if ((detectCharacter(i - x, j) == 0 && (detectBlock(i - x, j) == 0) && gameBoardInfo[i - x][j] == 0) || gameBoardInfo[i - x][j] == BlockWeak)
-                    {
-                        if (gameBoardInfo[i - x][j] == BlockWeak)
-                        {
-                            int ran = rand() % 3;
-                            if (ran == 0)
-                            {
-                                gameBoardInfo[i - x][j] = makeRandomItem();
-                            }
-                        }
-                        if (gameBoardInfo[i - x][j]<ItemHeart || gameBoardInfo[i - x][j]>ItemPower)
-                            gameBoardInfo[i - x][j] = BombZero;
-
-                    }
+                    if (gameBoardInfo[i-x][j] >= ItemHeart && gameBoardInfo[i-x][j + x] <= ItemPower)
+                        gameBoardInfo[i-x][j] = BombZero;
                     else
-                        break;
+                    {
+                        if ((detectCharacter(i - x, j) == 0 && (detectBlock(i - x, j) == 0) && gameBoardInfo[i - x][j] == 0) || gameBoardInfo[i - x][j] == BlockWeak)
+                        {
+                            if (gameBoardInfo[i - x][j] == BlockWeak)
+                            {
+                                int ran = rand() % 3;
+                                if (ran == 0)
+                                {
+                                    gameBoardInfo[i - x][j] = makeRandomItem();
+
+                                }
+                                else
+                                {
+                                    gameBoardInfo[i - x][j] = BombZero;
+                                }
+                                break;
+                            }
+                            if (gameBoardInfo[i - x][j]<ItemHeart || gameBoardInfo[i - x][j]>ItemPower)
+                                gameBoardInfo[i - x][j] = BombZero;
+
+                        }
+                        else
+                            break;
+                    }
                 }
                 drawingTotalMap();
 
