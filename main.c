@@ -375,7 +375,7 @@ void explosion()
 
                             gameBoardInfo[i][j + x] = BombZero;
 
-
+                       
 
 
                     }
@@ -397,7 +397,7 @@ void explosion()
                         }
                         if (gameBoardInfo[i][j - x]<ItemHeart || gameBoardInfo[i][j - x]>ItemPower)
                             gameBoardInfo[i][j - x] = BombZero;
-
+                    
                     }
                     else
                         break;
@@ -417,7 +417,7 @@ void explosion()
                         }
                         if (gameBoardInfo[i + x][j]<ItemHeart || gameBoardInfo[i + x][j]>ItemPower)
                             gameBoardInfo[i + x][j] = BombZero;
-
+                      
                     }
                     else
                         break;
@@ -437,11 +437,12 @@ void explosion()
                         }
                         if (gameBoardInfo[i - x][j]<ItemHeart || gameBoardInfo[i - x][j]>ItemPower)
                             gameBoardInfo[i - x][j] = BombZero;
-
+                       
                     }
                     else
                         break;
                 }
+                drawingTotalMap();
 
 
 
@@ -503,7 +504,7 @@ void findChangingBomb(double current_time)
                 }
 
 
-
+                drawingTotalMap();
 
             }
         }
