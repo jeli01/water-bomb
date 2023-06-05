@@ -6,22 +6,22 @@
 #include <time.h>
 
 typedef enum ColorType {
-    BLACK,     //0
-    darkBLUE,   //1
-    DarkGreen,   //2
-    darkSkyBlue,    //3
-    DarkRed,     //4
-    DarkPurple,   //5
-    DarkYellow,   //6
-    GRAY,      //7
-    DarkGray,   //8
-    BLUE,      //9
-    GREEN,      //10
-    SkyBlue,   //11
-    RED,      //12
-    PURPLE,      //13
-    YELLOW,      //14
-    WHITE      //15
+    BLACK, //0
+    darkBLUE, //1
+    DarkGreen, //2
+    darkSkyBlue, //3
+    DarkRed, //4
+    DarkPurple, //5
+    DarkYellow, //6
+    GRAY, //7
+    DarkGray, //8
+    BLUE, //9
+    GREEN, //10
+    SkyBlue, //11
+    RED, //12
+    PURPLE, //13
+    YELLOW, //14
+    WHITE //15
 }COLOR;
 enum Block {
     BlockSolid = 100,
@@ -48,7 +48,8 @@ enum Bomb {
 } BOMB;
 enum Pc {
     PcNormal = 400,
-    PcOnBomb = 401
+    PcOnBomb = 401,
+    PcOnHit = 402
 } PC;
 enum Npc {
     NpcPattern = 500,
@@ -69,7 +70,7 @@ typedef struct NPCcc {
 }NPC_pos_nopattern;
 typedef struct mainCharacterInfo {
     int hp;
-    int bombNum;                                                                            //캐릭터가 놓은 Bomb의 갯수
+    int bombNum; //캐릭터가 놓은 Bomb의 갯수
     int plusBombNumItem;
     int plusBombPowerItem;
 
@@ -103,7 +104,7 @@ bossCharacterInfo bossCharacter;
 PC_pos* pc;
 NPC_pos_pattern* npc_pattern;
 NPC_pos_nopattern* npc_nopattern;
-int npcspeed = 8;
+int npcspeed = 12;
 int cnt_npc_pattern;
 int cnt_npc_nopattern;
 int curMenu = 0;
@@ -128,121 +129,141 @@ double TimeBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2];
 int stageNum = 1;
 
 int gameBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,100,100,100,100,100,100,100,100,100,100,0  ,101,100,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,0  ,0  ,100,0  ,100,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,100,0  ,100,0  ,100,201,100,0  ,0  ,0  ,100,101,0  ,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,100,0  ,100,0  ,100,100,100,100,0  ,0  ,100},
-    {100,0  ,100,100,100,0  ,0  ,0  ,100,100,100,0  ,100,101,0  ,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,101,100,0  ,0  ,0  ,100,0  ,100,100,0  ,100,0  ,0  ,100,0  ,100},
-    {100,100,100,0  ,100,100,100,0  ,202,0  ,0  ,100,100,0  ,100,0  ,100},
-    {100,0  ,100,0  ,0  ,0  ,100,0  ,0  ,100,0  ,0  ,100,0  ,0  ,100,100},
-    {100,0  ,0  ,0  ,100,0  ,0  ,0  ,100,0  ,100,100,100,0  ,0  ,100,100},
-    {100,0  ,100,0  ,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,100},
-    {100,100,100,0  ,100,101,100,100,101,101,100,100,100,0  ,0  ,100,100},
-    {100,100,101,0  ,0  ,0  ,0  ,0  ,100,100,0  ,0  ,0  ,0  ,100,100,100},
-    {100,0  ,0  ,0  ,100,0  ,100,101,0  ,200,0  ,100,0  ,0  ,0  ,100,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,100,100,100,100,100,100,100,100,100,100,0 ,101,100,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,0 ,0 ,100,0 ,100,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,100,0 ,100,0 ,100,201,100,0 ,0 ,0 ,100,101,0 ,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,100,0 ,100,0 ,100,100,100,100,0 ,0 ,100},
+{100,0 ,100,100,100,0 ,0 ,0 ,100,100,100,0 ,100,101,0 ,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,101,100,0 ,0 ,0 ,100,0 ,100,100,0 ,100,0 ,0 ,100,0 ,100},
+{100,100,100,0 ,100,100,100,0 ,202,0 ,0 ,100,100,0 ,100,0 ,100},
+{100,0 ,100,0 ,0 ,0 ,100,0 ,0 ,100,0 ,0 ,100,0 ,0 ,100,100},
+{100,0 ,0 ,0 ,100,0 ,0 ,0 ,100,0 ,100,100,100,0 ,0 ,100,100},
+{100,0 ,100,0 ,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,100},
+{100,100,100,0 ,100,101,100,100,101,101,100,100,100,0 ,0 ,100,100},
+{100,100,101,0 ,0 ,0 ,0 ,0 ,100,100,0 ,0 ,0 ,0 ,100,100,100},
+{100,0 ,0 ,0 ,100,0 ,100,101,0 ,200,0 ,100,0 ,0 ,0 ,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 
 int gameBoardInfo1[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,100,100,100,100,100,100,100,100,100,100,0  ,101,100,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,0  ,0  ,100,0  ,100,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,100,0  ,100,0  ,100,201,100,0  ,0  ,0  ,100,101,0  ,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,100,0  ,100,0  ,100,100,100,100,0  ,0  ,100},
-    {100,0  ,100,100,100,0  ,0  ,0  ,100,100,100,0  ,100,101,0  ,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,101,100,0  ,0  ,0  ,100,0  ,100,100,0  ,100,0  ,0  ,100,0  ,100},
-    {100,100,100,0  ,100,100,100,0  ,202,0  ,0  ,100,100,0  ,100,0  ,100},
-    {100,0  ,100,0  ,0  ,0  ,100,0  ,0  ,100,0  ,0  ,100,0  ,0  ,100,100},
-    {100,0  ,0  ,0  ,100,0  ,0  ,0  ,100,0  ,100,100,100,0  ,0  ,100,100},
-    {100,0  ,100,0  ,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,100},
-    {100,100,100,0  ,100,101,100,100,101,101,100,100,100,0  ,0  ,100,100},
-    {100,100,101,0  ,0  ,0  ,0  ,0  ,100,100,0  ,0  ,0  ,0  ,100,100,100},
-    {100,0  ,0  ,0  ,100,0  ,100,101,0  ,200,0  ,100,0  ,0  ,0  ,100,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,100,100,100,100,100,100,100,100,100,100,0 ,101,100,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,0 ,0 ,100,0 ,100,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,100,0 ,100,0 ,100,201,100,0 ,0 ,0 ,100,101,0 ,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,100,0 ,100,0 ,100,100,100,100,0 ,0 ,100},
+{100,0 ,100,100,100,0 ,0 ,0 ,100,100,100,0 ,100,101,0 ,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,101,100,0 ,0 ,0 ,100,0 ,100,100,0 ,100,0 ,0 ,100,0 ,100},
+{100,100,100,0 ,100,100,100,0 ,202,0 ,0 ,100,100,0 ,100,0 ,100},
+{100,0 ,100,0 ,0 ,0 ,100,0 ,0 ,100,0 ,0 ,100,0 ,0 ,100,100},
+{100,0 ,0 ,0 ,100,0 ,0 ,0 ,100,0 ,100,100,100,0 ,0 ,100,100},
+{100,0 ,100,0 ,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,100},
+{100,100,100,0 ,100,101,100,100,101,101,100,100,100,0 ,0 ,100,100},
+{100,100,101,0 ,0 ,0 ,0 ,0 ,100,100,0 ,0 ,0 ,0 ,100,100,100},
+{100,0 ,0 ,0 ,100,0 ,100,101,0 ,200,0 ,100,0 ,0 ,0 ,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 int gameBoardInfo2[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,100,0  ,0  ,100,100,100,0  ,100,100,100,0  ,0  ,100,0  ,100},
-    {100,0  ,0  ,0  ,101,0  ,0  ,0  ,0  ,0  ,0  ,0  ,101,0  ,0  ,0  ,100},
-    {100,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,100},
-    {100,0  ,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,0  ,100},
-    {100,101,0  ,0  ,0  ,100,0  ,0  ,0  ,0  ,0  ,100,0  ,0  ,0  ,0  ,100},
-    {100,101,0  ,0  ,0  ,0  ,100,0  ,0  ,0  ,100,0  ,0  ,0  ,0  ,101,100},
-    {100,101,101,0  ,0  ,0  ,0  ,100,100,100,0  ,0  ,0  ,0  ,101,101,100},
-    {100,101,101,0  ,101,0  ,0  ,0  ,0  ,0  ,0  ,0  ,101,0  ,101,101,100},
-    {100,101,100,0  ,101,101,0  ,0  ,0  ,0  ,0  ,101,101,0  ,100,101,100},
-    {100,101,0  ,0  ,101,101,101,0  ,0  ,0  ,101,101,101,0  ,0  ,101,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,100,0 ,0 ,100,100,100,0 ,100,100,100,0 ,0 ,100,0 ,100},
+{100,0 ,0 ,0 ,101,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101,0 ,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,0 ,100},
+{100,101,0 ,0 ,0 ,100,0 ,0 ,0 ,0 ,0 ,100,0 ,0 ,0 ,0 ,100},
+{100,101,0 ,0 ,0 ,0 ,100,0 ,0 ,0 ,100,0 ,0 ,0 ,0 ,101,100},
+{100,101,101,0 ,0 ,0 ,0 ,100,100,100,0 ,0 ,0 ,0 ,101,101,100},
+{100,101,101,0 ,101,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101,0 ,101,101,100},
+{100,101,100,0 ,101,101,0 ,0 ,0 ,0 ,0 ,101,101,0 ,100,101,100},
+{100,101,0 ,0 ,101,101,101,0 ,0 ,0 ,101,101,101,0 ,0 ,101,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 int gameBoardInfo3[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,100,101,100,101,100,101,100,101,100,101,100,0  ,0  ,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,100,0  ,100,101,100,101,100,0  ,100,101,100,101,100,0  ,100,100},
-    {100,101,0  ,101,101,100,101,101,0  ,101,101,100,101,101,0  ,101,100},
-    {100,100,0  ,100,100,100,100,100,0  ,100,100,100,100,100,0  ,100,100},
-    {100,101,0  ,101,101,100,101,101,0  ,101,101,100,101,101,0  ,101,100},
-    {100,100,0  ,100,101,100,101,100,0  ,100,101,100,101,100,0  ,100,100},
-    {100,101,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,101,100},
-    {100,100,0  ,100,101,100,101,100,0  ,100,101,100,101,100,0  ,100,100},
-    {100,101,0  ,101,101,100,101,101,0  ,101,101,100,101,101,0  ,101,100},
-    {100,100,0  ,100,100,100,100,100,0  ,100,100,100,100,100,0  ,100,100},
-    {100,101,0  ,101,101,100,101,101,0  ,101,101,100,101,101,0  ,101,100},
-    {100,101,0  ,100,101,100,101,100,0  ,100,101,100,101,100,0  ,100,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,0  ,100,101,100,101,100,101,100,101,100,101,100,0  ,0  ,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,100,101,100,101,100,101,100,101,100,101,100,0 ,0 ,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,100,0 ,100,101,100,101,100,0 ,100,101,100,101,100,0 ,100,100},
+{100,101,0 ,101,100,100,100,101,0 ,101,100,100,100,101,0 ,101,100},
+{100,100,0 ,100,100,100,100,100,0 ,100,100,100,100,100,0 ,100,100},
+{100,101,0 ,101,100,100,100,101,0 ,101,100,100,100,101,0 ,101,100},
+{100,100,0 ,100,101,100,101,100,0 ,100,101,100,101,100,0 ,100,100},
+{100,101,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101,100},
+{100,100,0 ,100,101,100,101,100,0 ,100,101,100,101,100,0 ,100,100},
+{100,101,0 ,101,100,100,100,101,0 ,101,100,100,100,101,0 ,101,100},
+{100,100,0 ,100,100,100,100,100,0 ,100,100,100,100,100,0 ,100,100},
+{100,101,0 ,101,100,100,100,101,0 ,101,100,100,100,101,0 ,101,100},
+{100,101,0 ,100,101,100,101,100,0 ,100,101,100,101,100,0 ,100,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,0 ,100,101,100,101,100,101,100,101,100,101,100,0 ,0 ,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 int gameBoardInfo4[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,101,101,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,101,101,100},
-    {100,101,100,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,100,101,100},
-    {100,101,101,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,101,101,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,0  ,101,0  ,100,100,100,100,100,100,100,0  ,101,0  ,0  ,100},
-    {100,0  ,0  ,101,0  ,100,100,100,100,100,100,100,0  ,101,0  ,0  ,100},
-    {100,0  ,0  ,101,0  ,100,100,100,100,100,100,100,0  ,101,0  ,0  ,100},
-    {100,0  ,0  ,101,0  ,100,100,100,100,100,100,100,0  ,101,0  ,0  ,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100},
-    {100,101,101,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,101,101,100},
-    {100,101,100,100,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,100,100,101,100},
-    {100,101,0  ,100,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,100,0  ,101,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,101,101,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,101,101,100},
+{100,101,100,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,100,101,100},
+{100,101,101,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,101,101,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,100,100,100,100,100,100,100,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,100,100,100,100,100,100,100,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,100,100,100,100,100,100,100,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,100,0 ,100,100,100,100,100,100,100,0 ,100,0 ,0 ,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+{100,101,100,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,100,101,100},
+{100,101,100,100,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,100,100,101,100},
+{100,101,0 ,100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100,0 ,101,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+};
+int gameBoardInfotutorial[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
+   {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,200 ,200 ,200 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,201 ,201 ,201 ,0 ,100,100,100,100,100,100,100,100,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,202 ,202 ,202 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,101 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
+   {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 
 int gameBoardInfoTest[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
-    {100,0  ,0  ,100,101,100,101,100,101,100,101,100,101,100,0  ,0  ,100},
-    {100,0  ,0  ,0  ,101,101,101,101,101,101,101,101,101,0  ,0  ,0  ,100},
-    {100,100,0  ,100,101,100,101,100,101,100,101,100,101,100,0  ,100,100},
-    {100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
-    {100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
-    {100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
-    {100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
-    {100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
-    {100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
-    {100,101,0,101,101,101,101,101,101,101,101,101,101,101,0,101,100},
-    {100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
-    {100,101,0,101,101,101,101,101,101,101,101,101,101,101,0,101,100},
-    {100,101,0  ,100,101,100,101,100,101,100,101,100,101,100,0  ,100,100},
-    {100,0  ,0  ,0  ,101,101,101,101,101,101,101,101,101,0  ,0  ,0  ,100},
-    {100,0  ,0  ,0,0,0,0,0,0,0,0,0,0,0,0  ,0  ,100},
-    {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
+{100,0 ,0 ,100,101,100,101,100,101,100,101,100,101,100,0 ,0 ,100},
+{100,0 ,0 ,0 ,101,101,101,101,101,101,101,101,101,0 ,0 ,0 ,100},
+{100,100,0 ,100,101,100,101,100,101,100,101,100,101,100,0 ,100,100},
+{100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
+{100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
+{100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
+{100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
+{100,101,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100},
+{100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
+{100,101,0,101,101,101,101,101,101,101,101,101,101,101,0,101,100},
+{100,100,0,100,101,100,101,100,101,100,101,100,101,100,0,100,100},
+{100,101,0,101,101,101,101,101,101,101,101,101,101,101,0,101,100},
+{100,101,0 ,100,101,100,101,100,101,100,101,100,101,100,0 ,100,100},
+{100,0 ,0 ,0 ,101,101,101,101,101,101,101,101,101,0 ,0 ,0 ,100},
+{100,0 ,0 ,0,0,0,0,0,0,0,0,0,0,0,0 ,0 ,100},
+{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
+
 
 void firstTimeBoardInfo(double current_time, int x, int y)
 {
@@ -257,7 +278,7 @@ void putBomb(int x, int y)
 
         gameBoardInfo[y][(x)] = 300;
         clock_t start = clock();
-        double current_time = (double)start/CLOCKS_PER_SEC;
+        double current_time = (double)start / CLOCKS_PER_SEC;
         firstTimeBoardInfo(current_time, x, y);
         MainCharacter.bombNum++;
     }
@@ -280,7 +301,7 @@ int isBombNum(int x, int y)
 
     return 1;
 }
-int  isMiddleBomb(int i, int j)
+int isMiddleBomb(int i, int j)
 
 {
     if (gameBoardInfo[i][j] >= BombFour && gameBoardInfo[i][j] <= BombOne2)
@@ -305,7 +326,7 @@ int isWaterLine(int i, int j)
     else return 0;
 
 }
-int  detectCharacter(int i, int j)
+int detectCharacter(int i, int j)
 {
     if (gameBoardInfo[i][j] == 400 || gameBoardInfo[i][j] == 401)
     {
@@ -396,7 +417,7 @@ void explosion()
                         if (detectBossWeakBlock(i, j + x) == 1)
                         {
                             bossCharacter.boss_hp--;
-
+                            bossCharacter.phase = 2;
                         }
                         else
                         {
@@ -440,7 +461,7 @@ void explosion()
                         if (detectBossWeakBlock(i, j - x) == 1)
                         {
                             bossCharacter.boss_hp--;
-
+                            bossCharacter.phase = 2;
                         }
                         else
                         {
@@ -483,6 +504,7 @@ void explosion()
                         {
 
                             bossCharacter.boss_hp--;
+                            bossCharacter.phase = 2;
                         }
                         else
                         {
@@ -514,7 +536,7 @@ void explosion()
                 }
                 for (int x = 1; x < MainCharacter.plusBombPowerItem; x++)
                 {
-                    if (gameBoardInfo[i - x][j] >= ItemHeart && gameBoardInfo[i - x][j + x] <= ItemPower)
+                    if (gameBoardInfo[i - x][j] >= ItemHeart && gameBoardInfo[i - x][j] <= ItemPower)
                         gameBoardInfo[i - x][j] = BombZero;
                     else
                     {
@@ -522,7 +544,7 @@ void explosion()
                         if (detectBossWeakBlock(i - x, j) == 1)
                         {
                             bossCharacter.boss_hp--;
-
+                            bossCharacter.phase = 2;
                         }
                         else
                         {
@@ -575,8 +597,8 @@ void findChangingBomb(double current_time)
 
             {
 
-                
-             
+
+
 
                 if (current_time - TimeBoardInfo[i][j] >= 5.6)
                 {
@@ -587,10 +609,9 @@ void findChangingBomb(double current_time)
                 {
 
                     gameBoardInfo[i][j] = BombOne;
-                    printf("     %lf    %lf", current_time, TimeBoardInfo[i][j]);
-                  
 
-                    
+
+
                 }
                 if (current_time - TimeBoardInfo[i][j] >= 3.5 && current_time - TimeBoardInfo[i][j] < 4.2)
                 {
@@ -682,8 +703,8 @@ void setnpc_nopattern(int i, int y, int x) {
 }
 
 int DetectpcCollision(int y, int x) {
-    if (gameBoardInfo[y][x] == 0) return 0;//아무것도 없는 곳이니깐 움직인다 
-    else if (gameBoardInfo[y][x] == 500 || gameBoardInfo[y][x] == 501) { //다음 위치가 npc랑 만나는 위치일때 
+    if (gameBoardInfo[y][x] == 0) return 0;//아무것도 없는 곳이니깐 움직인다
+    else if (gameBoardInfo[y][x] == 500 || gameBoardInfo[y][x] == 501) { //다음 위치가 npc랑 만나는 위치일때
         MainCharacter.hp--;
         if (gameBoardInfo[y][x] == 500)
         {
@@ -703,7 +724,7 @@ int DetectpcCollision(int y, int x) {
             }
             gameBoardInfo[y][x] = 0; //지운다.
         }
-        return 0; //pc를 다음위치로 움직인다.
+        return 2; //pc를 다음위치로 움직인다.
     }
     else if (gameBoardInfo[y][x] == 200) {
         if (MainCharacter.hp < 6) {
@@ -729,17 +750,19 @@ int DetectpcCollision(int y, int x) {
     else return 1; //그 외에는 움직이지 않는다.
 }
 int DetectnpcCollision(int y, int x) {
-    if (gameBoardInfo[y][x] == 0) return 0;//아무것도 없는 곳이니깐 움직인다 
-    else if (gameBoardInfo[y][x] == 400) return 2; //다음 위치가 pc랑 만나는 위치일때 
+    if (gameBoardInfo[y][x] == 0) return 0;//아무것도 없는 곳이니깐 움직인다
+    else if (gameBoardInfo[y][x] == 400) return 2; //다음 위치가 pc랑 만나는 위치일때
     else return 1; //막혀있을 때
 }
 
 void move_pc(int y, int x) {
-    if (DetectpcCollision(pc->pos.Y + y, pc->pos.X + x)) return;
+    int isDetect = DetectpcCollision(pc->pos.Y + y, pc->pos.X + x);
+    if (isDetect == 1) return;
     gameBoardInfo[pc->pos.Y][pc->pos.X] = 0;
     pc->pos.X += x;
     pc->pos.Y += y;
-    gameBoardInfo[pc->pos.Y][pc->pos.X] = 400;
+    if (isDetect == 2)gameBoardInfo[pc->pos.Y][pc->pos.X] = 402;
+    else gameBoardInfo[pc->pos.Y][pc->pos.X] = 400;
     drawingTotalMap();
     return;
 }
@@ -798,6 +821,7 @@ void move_pattern_npc() {
             MainCharacter.hp--;
             gameBoardInfo[npc_pattern[i].pos.Y][npc_pattern[i].pos.X] = 0;
             npc_pattern[i].live = FALSE;
+            gameBoardInfo[pc->pos.Y][pc->pos.X] = 402;
         }
         else { //움직일때
             gameBoardInfo[npc_pattern[i].pos.Y][npc_pattern[i].pos.X] = 0;
@@ -812,7 +836,7 @@ void move_pattern_npc() {
 void move_nopattern_npc() {
     for (int i = 0; i < cnt_npc_nopattern; i++)
     {
-        if (!npc_nopattern[i].live) continue; //살아있는 것만 작동시킨다. 
+        if (!npc_nopattern[i].live) continue; //살아있는 것만 작동시킨다.
         int random;
         int x, y;
         random = rand() % 4; //숫자를 높이면 더 pc을 따라간다.
@@ -864,6 +888,8 @@ void move_nopattern_npc() {
             MainCharacter.hp--;
             gameBoardInfo[npc_nopattern[i].pos.Y][npc_nopattern[i].pos.X] = 0;
             npc_nopattern[i].live = FALSE;
+            gameBoardInfo[pc->pos.Y][pc->pos.X] = 402;
+
         }
         else { //움직일때
             gameBoardInfo[npc_nopattern[i].pos.Y][npc_nopattern[i].pos.X] = 0;
@@ -887,8 +913,27 @@ BOOLEAN npc_alldiecheck() {
     if (flag == 0) return TRUE;
     else return FALSE;
 }
+int countnpc() {
+    int cnt = 0;
+    for (int i = 0; i < cnt_npc_nopattern; i++) {
+        if (npc_nopattern[i].live)cnt++;
+    }
+    for (int i = 0; i < cnt_npc_pattern; i++) {
+        if (npc_pattern[i].live)cnt++;
+    }
+    return cnt;
+}
 //나중에 pc체력이 0일때도 작성
-//보스 공격 할 거 만들어 논거 
+//보스 공격 할 거 만들어 논거
+void spawntutorialnpc() {
+    cnt_npc_nopattern = 1;
+    cnt_npc_pattern = 1;
+    npc_pattern = malloc(sizeof(NPC_pos_pattern) * cnt_npc_pattern);
+    npc_nopattern = malloc(sizeof(NPC_pos_nopattern) * cnt_npc_nopattern);
+    setnpc_nopattern(0, 2, 12);
+    setnpc_pattern(0, 12, 12);
+    return;
+}
 void spawnnpc(int n) { //n*2개의 npc 만큼 랜덤한 장소에 소환
     int y, x;
     cnt_npc_pattern = n;
@@ -964,8 +1009,10 @@ void deletenpc() {
             }
         }
     }
-    free(npc_nopattern);
-    free(npc_pattern);
+    for (int i = 0; i < cnt_npc_nopattern; i++) {
+        npc_nopattern[i].live = FALSE;
+        npc_pattern[i].live = FALSE;
+    }
     return;
 }
 void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
@@ -978,7 +1025,7 @@ void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
         }
         gameBoardInfo[y][(x)] = 300;
         clock_t start = clock();
-        double current_time = (double)start/CLOCKS_PER_SEC;
+        double current_time = (double)start / CLOCKS_PER_SEC;
         firstTimeBoardInfo(current_time, x, y);
     }
     return;
@@ -1031,6 +1078,9 @@ void ProcessKeyInput() {
             case 77:
                 move_pc(0, 1);
                 break;
+            case 57:
+                deletenpc();
+                break;
             case 72:
                 move_pc(-1, 0);
                 break;
@@ -1063,8 +1113,23 @@ void ProcessKeyInput() {
             drawingTotalMap();
         }
         if (flag == 2) { //보스 단계일때 보스공격
+            if (e % 300 == 270) {
+                bossCharacter.phase = 1;
+            }
             if (e % 300 == 0) {
                 addspawnnpc(2);
+            }
+            if (e % 300 == 50) {
+                bossCharacter.phase = 0;
+            }
+            if (e % 300 == 105) {
+                bossCharacter.phase = 0;
+            }
+            if (e % 300 == 160) {
+                bossCharacter.phase = 0;
+            }
+            if (e % 300 == 215) {
+                bossCharacter.phase = 0;
             }
             if (e % 5000 == 0) {
                 npcspeedup();
@@ -1086,15 +1151,15 @@ int main() {
     settingUiInit();
     srand(time(NULL));
     RemoveCursor();
-    //drawingTotalMap();             // 이거 왜있는거죠? 주석처리 할게용 메뉴 만들때 오류남
-    Sleep(1000);                     // 얘도 왜있는거지 ㅇㄴ
+    //drawingTotalMap(); // 이거 왜있는거죠? 주석처리 할게용 메뉴 만들때 오류남
+    Sleep(1000); // 얘도 왜있는거지 ㅇㄴ
     pc = malloc(sizeof(PC_pos));
 
     while (1) {
-        stageNum = 1;
+        stageNum = 0;//0은 튜토리얼 시작
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
             for (j = 0; j < GBOARD_WIDTH + 2; j++) {
-                gameBoardInfo[i][j] = gameBoardInfo1[i][j];
+                gameBoardInfo[i][j] = gameBoardInfotutorial[i][j]; //튜토리얼로 시작함
             }
         }
         erazeWindow();
@@ -1134,29 +1199,33 @@ int main() {
             break;
         }
 
-
-        setpc(1, 1);                           // pc 위치 초기화
-        spawnnpc(2); //각각 3개의 npc를 소환하는 함수 만듬
+        if (stageNum == 0) spawntutorialnpc();
+        else spawnnpc(3);
+        setpc(1, 1); // pc 위치 초기화
+        //각각 3개의 npc를 소환하는 함수 만듬
         MainCharacter.bombNum = 0;
-        MainCharacter.plusBombNumItem = 3;     // 물폭탄 개수 초기화
-        MainCharacter.plusBombPowerItem = 2;   // 화력 초기화
-        MainCharacter.hp = 5;
-        bossCharacter.boss_hp = 42;
+        MainCharacter.plusBombNumItem = 3; // 물폭탄 개수 초기화
+        MainCharacter.plusBombPowerItem = 2; // 화력 초기화
+        MainCharacter.hp = 3;
+        bossCharacter.boss_hp = 10;
         // pc hp 초기화
         erazeWindow();
         drawingTotalMap();
         while (1) {
             //printf("%lf", time);
             clock_t current_time = clock();
-            double time = (double)current_time/CLOCKS_PER_SEC;
+            double time = (double)current_time / CLOCKS_PER_SEC;
             findChangingBomb(time);
             explosion();
             ProcessKeyInput();
-            printf("%d", bossCharacter.boss_hp);
             /* 스테이지 ㄱㄱ
             */
-            if (MainCharacter.hp < 1) break; //npc가 모두 죽으면 끝내준다. or pc 죽으면 끝내준다.
-            if (flag == 1) { //보스 맵 아닐때 
+            if (MainCharacter.hp < 1)
+            {
+                flag = 1;
+                break; //npc가 모두 죽으면 끝내준다. or pc 죽으면 끝내준다.
+            }
+            if (flag == 1) { //보스 맵 아닐때
                 if (npc_alldiecheck()) {
                     free(npc_pattern);
                     free(npc_nopattern);
@@ -1166,7 +1235,7 @@ int main() {
                     }
                 }
             }
-            else { //보스 맵일때 
+            else { //보스 맵일때
 
                 if (bossCharacter.boss_hp == 0) {
                     flag = nextStage();
@@ -1218,6 +1287,21 @@ void printGameBoard() {
                 switch (gameBoardInfo[y][x]) {
                 case BlockSolid:
                     if (stageNum == 4 && x >= BOSS_START_X && y >= BOSS_START_Y && x <= 11 && y <= 10) {
+                        if (bossCharacter.boss_hp > 8) {
+                            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
+                        }
+                        else if (bossCharacter.boss_hp > 6) {
+                            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), YELLOW);
+                        }
+                        else if (bossCharacter.boss_hp > 4) {
+                            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DarkYellow);
+                        }
+                        else if (bossCharacter.boss_hp > 2) {
+                            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RED);
+                        }
+                        else {
+                            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), DarkRed);
+                        }
                         if (bossCharacter.phase == 0) {
                             if (x == BOSS_START_X && y == BOSS_START_Y) {
                                 printf("┌ ");
@@ -1480,6 +1564,7 @@ void printGameBoard() {
                     else {
                         printf("■");
                     }
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
                     break;
                 case BlockWeak:
                     printf("▦");
@@ -1573,7 +1658,11 @@ void printGameBoard() {
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), BLUE);
                     printf("♀");
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
-
+                    break;
+                case PcOnHit:
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RED);
+                    printf("♀");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
                     break;
                 default:
                     break;
@@ -1697,18 +1786,47 @@ void drawPowerUI() {
 
 void drawNpcHP() {
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 6);
-    if (bossCharacter.boss_hp / 10 >= 3) {
-        printf("보스 HP : ■■■■■■■■■■■■■■");
-    }
-    else if (1) {
-        printf("보스 HP : ■■■■■■■■■■■■■■");
-    }
-    else if (1) {
-        printf("보스 HP : ■■■■■■■■■■■■■■");
+
+    if (stageNum == 4) {
+        if (bossCharacter.boss_hp == 10) {
+            printf("보스 HP : ■■■■■■■■■■");
+        }
+        else if (bossCharacter.boss_hp == 9) {
+            printf("보스 HP : ■■■■■■■■■□");
+        }
+        else if (bossCharacter.boss_hp == 8) {
+            printf("보스 HP : ■■■■■■■■□□");
+        }
+        else if (bossCharacter.boss_hp == 7) {
+            printf("보스 HP : ■■■■■■■□□□");
+        }
+        else if (bossCharacter.boss_hp == 6) {
+            printf("보스 HP : ■■■■■■□□□□");
+        }
+        else if (bossCharacter.boss_hp == 5) {
+            printf("보스 HP : ■■■■■□□□□□");
+        }
+        else if (bossCharacter.boss_hp == 4) {
+            printf("보스 HP : ■■■■□□□□□□");
+        }
+        else if (bossCharacter.boss_hp == 3) {
+            printf("보스 HP : ■■■□□□□□□□");
+        }
+        else if (bossCharacter.boss_hp == 2) {
+            printf("보스 HP : ■■□□□□□□□□");
+        }
+        else if (bossCharacter.boss_hp == 1) {
+            printf("보스 HP : ■□□□□□□□□□");
+        }
+        else {
+            printf("보스 HP : □□□□□□□□□□");
+        }
     }
     else {
-        printf("보스 HP : ■■■■■■■■■■■■■■");
+        printf("%적의 수 : %d", countnpc());
     }
+    SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 8);
+    printf(" %d Stage", stageNum);
 }
 int nextStage() {
     int i, j;
@@ -1717,20 +1835,20 @@ int nextStage() {
     if (stageNum == 5) {
         return 0;
     }
-    if (stageNum == 2) { //만약 보스라고 생각한다.
+    if (stageNum == 4) { //만약 보스라고 생각한다.
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
             for (j = 0; j < GBOARD_WIDTH + 2; j++) {
                 gameBoardInfo[i][j] = gameBoardInfo4[i][j];
             }
         }
-        setpc(1, 1);                           // pc 위치 초기화
+        setpc(1, 1); // pc 위치 초기화
         spawnnpc(1);
         MainCharacter.bombNum = 0;
         MainCharacter.hp = 3;
-        MainCharacter.plusBombNumItem = 3;     // 물폭탄 개수 초기화
-        MainCharacter.plusBombPowerItem = 2;   // 화력 초기화
+        MainCharacter.plusBombNumItem = 3; // 물폭탄 개수 초기화
+        MainCharacter.plusBombPowerItem = 2; // 화력 초기화
         drawingTotalMap();
-        npcspeed = 20;
+        npcspeed = 15;
         return 2; //return 2로 신호를 준다.
     }
     if (stageNum == 3) {
@@ -1739,21 +1857,30 @@ int nextStage() {
                 gameBoardInfo[i][j] = gameBoardInfo3[i][j];
             }
         }
+        npcspeed = 2;
     }
-    if (stageNum == 4) {
+    if (stageNum == 2) {
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
             for (j = 0; j < GBOARD_WIDTH + 2; j++) {
-                gameBoardInfo[i][j] = gameBoardInfo4[i][j];
+                gameBoardInfo[i][j] = gameBoardInfo2[i][j];
+            }
+        }
+        npcspeed = 5;
+    }
+    if (stageNum == 1) {
+        for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
+            for (j = 0; j < GBOARD_WIDTH + 2; j++) {
+                gameBoardInfo[i][j] = gameBoardInfo1[i][j];
             }
         }
     }
 
-    setpc(1, 1);                           // pc 위치 초기화
-    spawnnpc(2); //각각 3개의 npc를 소환하는 함수 만듬
+    setpc(1, 1); // pc 위치 초기화
+    spawnnpc(4); //각각 4개의 npc를 소환하는 함수 만듬
     MainCharacter.bombNum = 0;
     MainCharacter.hp = 3;
-    MainCharacter.plusBombNumItem = 3;     // 물폭탄 개수 초기화
-    MainCharacter.plusBombPowerItem = 2;   // 화력 초기화
+    MainCharacter.plusBombNumItem = 3; // 물폭탄 개수 초기화
+    MainCharacter.plusBombPowerItem = 2; // 화력 초기화
     drawingTotalMap();
 
     return 1;
