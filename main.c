@@ -375,7 +375,7 @@ void explosion()
 
                             gameBoardInfo[i][j + x] = BombZero;
 
-                       
+
 
 
                     }
@@ -397,7 +397,7 @@ void explosion()
                         }
                         if (gameBoardInfo[i][j - x]<ItemHeart || gameBoardInfo[i][j - x]>ItemPower)
                             gameBoardInfo[i][j - x] = BombZero;
-                    
+
                     }
                     else
                         break;
@@ -417,7 +417,7 @@ void explosion()
                         }
                         if (gameBoardInfo[i + x][j]<ItemHeart || gameBoardInfo[i + x][j]>ItemPower)
                             gameBoardInfo[i + x][j] = BombZero;
-                      
+
                     }
                     else
                         break;
@@ -437,7 +437,7 @@ void explosion()
                         }
                         if (gameBoardInfo[i - x][j]<ItemHeart || gameBoardInfo[i - x][j]>ItemPower)
                             gameBoardInfo[i - x][j] = BombZero;
-                       
+
                     }
                     else
                         break;
@@ -591,17 +591,23 @@ int DetectpcCollision(int y, int x) {
         return 0; //pc를 다음위치로 움직인다.
     }
     else if (gameBoardInfo[y][x] == 200) {
-        MainCharacter.hp += 1;
+        if (MainCharacter.hp < 6) {
+            MainCharacter.hp += 1;
+        }
         gameBoardInfo[y][x] = 0;
         return 0;
     }
     else if (gameBoardInfo[y][x] == 201) {
-        MainCharacter.plusBombNumItem += 1;
+        if (MainCharacter.plusBombNumItem < 10) {
+            MainCharacter.plusBombNumItem += 1;
+        }
         gameBoardInfo[y][x] = 0;
         return 0;
     }
     else if (gameBoardInfo[y][x] == 202) {
-        MainCharacter.plusBombPowerItem += 1;
+        if (MainCharacter.plusBombPowerItem < 11) {
+            MainCharacter.plusBombPowerItem += 1;
+        }
         gameBoardInfo[y][x] = 0;
         return 0;
     }
@@ -1042,14 +1048,23 @@ void printGameBoard() {
 
 void printHeroHp() {
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y);
-    if (MainCharacter.hp == 3) {
+    if (MainCharacter.hp == 6) {
         printf("플레이어 HP : ■■■■■■");
     }
-    else if (MainCharacter.hp == 2) {
+    else if (MainCharacter.hp == 5) {
+        printf("플레이어 HP : ■■■■■□");
+    }
+    else if (MainCharacter.hp == 4) {
         printf("플레이어 HP : ■■■■□□");
     }
-    else if (MainCharacter.hp == 1) {
+    else if (MainCharacter.hp == 3) {
+        printf("플레이어 HP : ■■■□□□");
+    }
+    else if (MainCharacter.hp == 2) {
         printf("플레이어 HP : ■■□□□□");
+    }
+    else if (MainCharacter.hp == 1) {
+        printf("플레이어 HP : ■□□□□□");
     }
     else {
         printf("플레이어 HP : □□□□□□");
