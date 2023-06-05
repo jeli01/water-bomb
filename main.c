@@ -256,8 +256,8 @@ void putBomb(int x, int y)
     {
 
         gameBoardInfo[y][(x)] = 300;
-        time_t start = time(NULL);
-        double current_time = (double)start;
+        clock_t start = clock();
+        double current_time = (double)start/CLOCKS_PER_SEC;
         firstTimeBoardInfo(current_time, x, y);
         MainCharacter.bombNum++;
     }
@@ -572,42 +572,47 @@ void findChangingBomb(double current_time)
         for (int j = 0; j < 17; j++)
         {
             if (isMiddleBomb(i, j) == 1)
+
             {
 
+                
+             
 
-
-
-                if (current_time - TimeBoardInfo[i][j] >= 7)
+                if (current_time - TimeBoardInfo[i][j] >= 5.6)
                 {
                     gameBoardInfo[i][j] = BombOne2;
                 }
 
-                if (current_time - TimeBoardInfo[i][j] >= 6 && current_time - TimeBoardInfo[i][j] < 7)
+                if (current_time - TimeBoardInfo[i][j] >= 4.2 && current_time - TimeBoardInfo[i][j] < 4.9)
                 {
 
                     gameBoardInfo[i][j] = BombOne;
+                    printf("     %lf    %lf", current_time, TimeBoardInfo[i][j]);
+                  
+
+                    
                 }
-                if (current_time - TimeBoardInfo[i][j] >= 5 && current_time - TimeBoardInfo[i][j] < 6)
+                if (current_time - TimeBoardInfo[i][j] >= 3.5 && current_time - TimeBoardInfo[i][j] < 4.2)
                 {
 
                     gameBoardInfo[i][j] = BombTwo2;
                 }
-                if (current_time - TimeBoardInfo[i][j] >= 4 && current_time - TimeBoardInfo[i][j] < 5)
+                if (current_time - TimeBoardInfo[i][j] >= 2.8 && current_time - TimeBoardInfo[i][j] < 3.5)
                 {
 
                     gameBoardInfo[i][j] = BombTwo;
                 }
-                if (current_time - TimeBoardInfo[i][j] >= 3 && current_time - TimeBoardInfo[i][j] < 4)
+                if (current_time - TimeBoardInfo[i][j] >= 2.1 && current_time - TimeBoardInfo[i][j] < 2.8)
                 {
 
                     gameBoardInfo[i][j] = BombThree2;
                 }
-                if (current_time - TimeBoardInfo[i][j] >= 2 && current_time - TimeBoardInfo[i][j] < 3)
+                if (current_time - TimeBoardInfo[i][j] >= 1.4 && current_time - TimeBoardInfo[i][j] < 2.1)
                 {
 
                     gameBoardInfo[i][j] = BombThree;
                 }
-                if (current_time - TimeBoardInfo[i][j] >= 1 && current_time - TimeBoardInfo[i][j] < 2)
+                if (current_time - TimeBoardInfo[i][j] >= 0.7 && current_time - TimeBoardInfo[i][j] < 1.4)
                 {
 
                     gameBoardInfo[i][j] = BombFour2;
@@ -972,8 +977,8 @@ void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
             if (gameBoardInfo[y][x] == 0) break;
         }
         gameBoardInfo[y][(x)] = 300;
-        time_t start = time(NULL);
-        double current_time = (double)start;
+        clock_t start = clock();
+        double current_time = (double)start/CLOCKS_PER_SEC;
         firstTimeBoardInfo(current_time, x, y);
     }
     return;
@@ -1077,7 +1082,7 @@ void ProcessKeyInput() {
     return;
 }
 int main() {
-    int key;
+    int key, i, j;
     settingUiInit();
     srand(time(NULL));
     RemoveCursor();
@@ -1087,6 +1092,11 @@ int main() {
 
     while (1) {
         stageNum = 1;
+        for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
+            for (j = 0; j < GBOARD_WIDTH + 2; j++) {
+                gameBoardInfo[i][j] = gameBoardInfo1[i][j];
+            }
+        }
         erazeWindow();
         while (1) { // 메뉴입니다.
             drawingGameMenu();
@@ -1137,8 +1147,8 @@ int main() {
         drawingTotalMap();
         while (1) {
             //printf("%lf", time);
-            time_t current_time = time(NULL);
-            double time = (double)current_time;
+            clock_t current_time = clock();
+            double time = (double)current_time/CLOCKS_PER_SEC;
             findChangingBomb(time);
             explosion();
             ProcessKeyInput();
