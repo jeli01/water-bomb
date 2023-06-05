@@ -28,7 +28,7 @@ enum Block {
     BlockWeak = 101,
 
     BossWeakBlock = 130                                          //bossWeakBlock을 130으로 설정함.
-    
+
 }BLOCK;
 enum Item {
     ItemHeart = 200,
@@ -77,6 +77,7 @@ typedef struct mainCharacterInfo {
 mainCharacterInfo MainCharacter;
 typedef struct bossCharacterInfo
 {
+    int phase;
     int boss_hp;
 
 }bossCharacterInfo;
@@ -100,6 +101,7 @@ bossCharacterInfo bossCharacter;
 PC_pos* pc;
 NPC_pos_pattern* npc_pattern;
 NPC_pos_nopattern* npc_nopattern;
+int npcspeed = 8;
 int cnt_npc_pattern;
 int cnt_npc_nopattern;
 void drawingTotalMap();
@@ -344,7 +346,6 @@ int detectBossWeakBlock(int i, int j)
     if (gameBoardInfo[i][j] == BossWeakBlock)
     {
         return 1;
-
     }
     return 0;
 }
@@ -470,7 +471,7 @@ void explosion()
                     else
                     {
 
-                        if (detectBossWeakBlock(i+x, j) == 1)
+                        if (detectBossWeakBlock(i + x, j) == 1)
                         {
 
                             bossCharacter.boss_hp--;
@@ -510,7 +511,7 @@ void explosion()
                     else
                     {
 
-                        if (detectBossWeakBlock(i-x, j) == 1)
+                        if (detectBossWeakBlock(i - x, j) == 1)
                         {
                             bossCharacter.boss_hp--;
 
@@ -802,7 +803,7 @@ void move_nopattern_npc() {
         int random;
         int x, y;
         random = rand() % 4; //숫자를 높이면 더 pc을 따라간다.
-        if (random < 1) {
+        if (random < 3) {
             random = rand() % 4; //random 0 왼 1 오 2 위 3 아래
             if (random == 0) {
                 x = -1;
@@ -897,6 +898,62 @@ void spawnnpc(int n) { //n*2개의 npc 만큼 랜덤한 장소에 소환
         }
         setnpc_nopattern(i, y, x);
     }
+    return;
+}
+void addspawnnpc(int n) {
+    int y, x;
+    cnt_npc_pattern += n;
+    cnt_npc_nopattern += n;
+    NPC_pos_pattern* temp = malloc(sizeof(NPC_pos_pattern) * (cnt_npc_pattern));
+    NPC_pos_nopattern* tempno = malloc(sizeof(NPC_pos_nopattern) * (cnt_npc_nopattern));
+    for (int i = 0; i < cnt_npc_pattern - n; i++) {
+        temp[i] = npc_pattern[i];
+        tempno[i] = npc_nopattern[i];
+    }
+    free(npc_nopattern);
+    free(npc_pattern);
+    
+    for (int i = cnt_npc_pattern - n; i < cnt_npc_pattern; i++) {
+        while (1) {
+            y = rand() % GBOARD_HEIGHT + 1;
+            x = rand() % GBOARD_WIDTH + 1;
+            if (gameBoardInfo[y][x] == 0) break;
+        }
+        temp[i].live = TRUE;
+        temp[i].pos.Y = y;
+        temp[i].pos.X = x;
+        gameBoardInfo[y][x] = 500;
+    }
+    for (int i = cnt_npc_pattern - n; i < cnt_npc_pattern; i++) {
+        while (1) {
+            y = rand() % GBOARD_HEIGHT + 1;
+            x = rand() % GBOARD_WIDTH + 1;
+            if (gameBoardInfo[y][x] == 0) break;
+        }
+        tempno[i].live = TRUE;
+        tempno[i].pos.Y = y;
+        tempno[i].pos.X = x;
+        gameBoardInfo[y][x] = 501;
+    }
+    npc_nopattern = tempno;
+    npc_pattern = temp;
+    drawingTotalMap();
+    return;
+}
+void deletenpc() {
+    int x, y;
+    for (y = 0; y < GBOARD_HEIGHT + 2; y++)
+    {
+        for (x = 0; x < GBOARD_WIDTH + 2; x++)
+        {
+            if (gameBoardInfo[y][x] == 501 || gameBoardInfo[y][x] == 500) {
+                gameBoardInfo[y][x] = 0;
+            }
+        }
+    }
+    free(npc_nopattern);
+    free(npc_pattern);
+    return;
 }
 void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
     int y, x;
@@ -913,13 +970,42 @@ void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
     }
     return;
 }
+void spawnbossweak(int n) {
+    int y, x;
+    for (int i = 0; i < n; i++) {
+        while (1) {
+            y = rand() % GBOARD_HEIGHT + 1;
+            x = rand() % GBOARD_WIDTH + 1;
+            if (gameBoardInfo[y][x] == 0) break;
+        }
+        gameBoardInfo[y][x] = 130;
+    }
+    return;
+}
+void deletebossweak() {
+    int x, y;
+    for (y = 0; y < GBOARD_HEIGHT + 2; y++)
+    {
+        for (x = 0; x < GBOARD_WIDTH + 2; x++)
+        {
+            if (gameBoardInfo[y][x] == 130) {
+                gameBoardInfo[y][x] = 0;
+            }
+        }
+    }
+    return;
+}
+void npcspeedup() {
+    if (npcspeed <= 0) return;
+    npcspeed--;
+    return;
+}
 
-
-
+int flag = 1; //boss 단계 구분하는 flag
 int before_key;
+int e = 0; //공격이랑 npc속도 관련
 void ProcessKeyInput() {
     int key;
-    int e=0;
 
     for (int i = 0; i < 20; i++) {
 
@@ -956,22 +1042,33 @@ void ProcessKeyInput() {
 
             before_key = key;
         }
-      
-            if (e % 4==0)
-            {
-                move_pattern_npc();
-                move_nopattern_npc();
-                drawingTotalMap();
+
+        if (e % npcspeed == 0) //npc 의 속도 조정
+        {
+            move_pattern_npc();
+            move_nopattern_npc();
+            drawingTotalMap();
+        }
+        if (flag == 2) { //보스 단계일때 보스공격
+            if (e % 300 == 0) {
+                addspawnnpc(2);
             }
-            e++;
+            if (e % 5000 == 0) {
+                npcspeedup();
+            }
+            if (e % 600 == 0) {
+                deletebossweak();
+                spawnbossweak(4);
+            }
+        }
         
+        e++;
+
         Sleep(20);
     }
     return;
 }
 int main() {
-    int flag;
-
     settingUiInit();
     srand(time(NULL));
     RemoveCursor();
@@ -983,7 +1080,9 @@ int main() {
     MainCharacter.bombNum = 0;
     MainCharacter.plusBombNumItem = 3;     // 물폭탄 개수 초기화
     MainCharacter.plusBombPowerItem = 2;   // 화력 초기화
-    MainCharacter.hp = 3;                  // pc hp 초기화
+    MainCharacter.hp = 5;   
+    bossCharacter.boss_hp = 42;
+    // pc hp 초기화
     drawingTotalMap();
     while (1) {
         //printf("%lf", time);
@@ -992,16 +1091,30 @@ int main() {
         findChangingBomb(time);
         explosion();
         ProcessKeyInput();
-       
+        printf("%d", bossCharacter.boss_hp);
         /* 스테이지 ㄱㄱ
         */
         if (MainCharacter.hp < 1) break; //npc가 모두 죽으면 끝내준다. or pc 죽으면 끝내준다.
-        if (npc_alldiecheck()) {
-            flag = nextStage();
-            if (flag == 0) {
-                break; // 다음스테이지가 없다면 break
+        if (flag == 1) { //보스 맵 아닐때 
+            if (npc_alldiecheck()) {
+                free(npc_pattern);
+                free(npc_nopattern);
+                flag = nextStage();
+                if (flag == 0) {
+                    break; //다음스테이지가 없다면 break
+                }
             }
         }
+        else { //보스 맵일때 
+            
+            if (bossCharacter.boss_hp == 0) {
+                flag = nextStage();
+                if (flag == 0) {
+                    break; //다음스테이지가 없다면 break
+                }
+            }
+        }
+        
     }
     return 0;
 }
@@ -1250,7 +1363,7 @@ void drawPowerUI() {
 
 void drawNpcHP() {
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 6);
-    if (1) {
+    if (bossCharacter.boss_hp/10>=3) {
         printf("보스 HP : ■■■■■■■■■■■■■■");
     }
     else if (1) {
@@ -1270,12 +1383,21 @@ int nextStage() {
     if (stageNum == 5) {
         return 0;
     }
-    if (stageNum == 2) {
+    if (stageNum == 2) { //만약 보스라고 생각한다.
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
             for (j = 0; j < GBOARD_WIDTH + 2; j++) {
-                gameBoardInfo[i][j] = gameBoardInfo2[i][j];
+                gameBoardInfo[i][j] = gameBoardInfo4[i][j];
             }
         }
+        setpc(1, 1);                           // pc 위치 초기화
+        spawnnpc(1);
+        MainCharacter.bombNum = 0;
+        MainCharacter.hp = 3;
+        MainCharacter.plusBombNumItem = 3;     // 물폭탄 개수 초기화
+        MainCharacter.plusBombPowerItem = 2;   // 화력 초기화
+        drawingTotalMap();
+        npcspeed = 20;
+        return 2; //return 2로 신호를 준다.
     }
     if (stageNum == 3) {
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
@@ -1284,7 +1406,7 @@ int nextStage() {
             }
         }
     }
-    if (stageNum == 4) {
+    if (stageNum == 4) {  
         for (i = 0; i < GBOARD_HEIGHT + 2; i++) {
             for (j = 0; j < GBOARD_WIDTH + 2; j++) {
                 gameBoardInfo[i][j] = gameBoardInfo4[i][j];
