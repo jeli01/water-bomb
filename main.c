@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-typedef enum ColorType {
+typedef enum ColorType {        // 색깔 ENUM으로 정의
     BLACK, //0
     darkBLUE, //1
     DarkGreen, //2
@@ -23,19 +23,19 @@ typedef enum ColorType {
     YELLOW, //14
     WHITE //15
 }COLOR;
-enum Block {
+enum Block {                // 게임 내에서 Block 종류를 정의
     BlockSolid = 100,
     BlockWeak = 101,
     BossWeakBlock = 130,
     BossWeakBlockAttacked = 131
 
 }BLOCK;
-enum Item {
+enum Item {                 // 게임 내에서 Item 종류를 정의
     ItemHeart = 200,
     ItemBomb = 201,
     ItemPower = 202
 } ITEM;
-enum Bomb {
+enum Bomb {                 // 게임 내에서 Bomb 종류를 정의
     BombFour = 300,
     BombFour2 = 301,
     BombThree = 302,
@@ -46,37 +46,37 @@ enum Bomb {
     BombOne2 = 307,
     BombZero = 310
 } BOMB;
-enum Pc {
+enum Pc {               // 게임내에서 PC의 상태를 정의
     PcNormal = 400,
     PcOnBomb = 401,
     PcOnHit = 402
 } PC;
-enum Npc {
+enum Npc {                      // 게임 내에서 Npc의 종류를 정의
     NpcPattern = 500,
     NpcNOPattern = 501
 } NPC;
 
-typedef struct PCc {
+typedef struct PCc {            // PC의 움직임을 정의
     COORD pos;
 
 }PC_pos;
-typedef struct NPCc {
+typedef struct NPCc {           // NPC1의 상태를 정의
     COORD pos;
     BOOLEAN live;
 }NPC_pos_pattern;
-typedef struct NPCcc {
+typedef struct NPCcc {          // NPC2의 상태를 정의
     COORD pos;
     BOOLEAN live;
 }NPC_pos_nopattern;
-typedef struct mainCharacterInfo {
+typedef struct mainCharacterInfo {          // PC의 상태를 정의
     int hp;
     int bombNum; //캐릭터가 놓은 Bomb의 갯수
     int plusBombNumItem;
     int plusBombPowerItem;
 
 }mainCharacterInfo;
-mainCharacterInfo MainCharacter;
-typedef struct bossCharacterInfo
+mainCharacterInfo MainCharacter;                
+typedef struct bossCharacterInfo                    // 보스의 상태를 정의
 {
     int phase;
     int boss_hp;
@@ -86,7 +86,7 @@ bossCharacterInfo bossCharacter;
 
 
 
-#define KUP 72
+#define KUP 72                                      // 상수들을 정의합니다.
 #define KDOWN 80
 #define KLEFT 75
 #define KRIGHT 77
@@ -127,7 +127,7 @@ double TimeBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2];
 //플레이어가 물풍선닿았을 때 색깔 바뀌는
 
 int stageNum = 1;
-
+// 게임판을 정의합니다.
 int gameBoardInfo[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
 {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 {100,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,100},
@@ -264,14 +264,14 @@ int gameBoardInfoTest[GBOARD_HEIGHT + 2][GBOARD_WIDTH + 2] = {
 {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
 };
 
-
+// 보드 판에 시간을 기록하는 함수 (시간이 지나면 폭탄이 터지게 하기 위함)
 void firstTimeBoardInfo(double current_time, int x, int y)
 {
     TimeBoardInfo[y][x] = current_time;
 
 
 }
-void putBomb(int x, int y)
+void putBomb(int x, int y)          // 폭탄을 놓는 함수
 {
     if (isBombNum(x, y) == 1)
     {
@@ -284,7 +284,7 @@ void putBomb(int x, int y)
     }
     else return;
 }
-int isBombNum(int x, int y)
+int isBombNum(int x, int y)         // 폭탄의 갯수를 세는 함수
 {
 
     if (gameBoardInfo[y][x] != 0)
@@ -301,7 +301,7 @@ int isBombNum(int x, int y)
 
     return 1;
 }
-int isMiddleBomb(int i, int j)
+int isMiddleBomb(int i, int j)  // 폭탄이 아직 터지지 않는 종류인지 확인
 
 {
     if (gameBoardInfo[i][j] >= BombFour && gameBoardInfo[i][j] <= BombOne2)
@@ -311,7 +311,7 @@ int isMiddleBomb(int i, int j)
     else return 0;
 
 }
-int isFinalBomb(int i, int j)
+int isFinalBomb(int i, int j)       // 터지기 직전의 폭탄인지 확인
 {
     if (gameBoardInfo[i][j] == BombOne2)
     {
@@ -319,14 +319,14 @@ int isFinalBomb(int i, int j)
     }
     else return 0;
 }
-int isWaterLine(int i, int j)
+int isWaterLine(int i, int j)               // 물줄기인지 확인한다.
 {
     if (gameBoardInfo[i][j] == BombZero)
         return 1;
     else return 0;
 
 }
-int detectCharacter(int i, int j)
+int detectCharacter(int i, int j)   // 탐지하고 물줄기를 맞게한다.
 {
     if (gameBoardInfo[i][j] == 400 || gameBoardInfo[i][j] == 401)
     {
@@ -357,7 +357,7 @@ int detectCharacter(int i, int j)
     }
     return 0;
 }
-int detectBlock(int i, int j)
+int detectBlock(int i, int j)       // 블록인지 확인
 {
     if (gameBoardInfo[i][j] == BlockWeak) {
 
@@ -370,7 +370,7 @@ int detectBlock(int i, int j)
 
     return 0;
 }
-int detectBossWeakBlock(int i, int j)
+int detectBossWeakBlock(int i, int j)       // 약한 블록인지 확인
 {
     if (gameBoardInfo[i][j] == BossWeakBlock)
     {
@@ -378,13 +378,13 @@ int detectBossWeakBlock(int i, int j)
     }
     return 0;
 }
-int makeRandomItem()
+int makeRandomItem()                    // 아이템이 나오게하는 함수 
 {
     int ran = rand() % 3;
     int itemN = 200 + ran;
     return itemN;
 }
-void explosion()
+void explosion()                // 물줄기 폭발하게 하는 함수
 {
     for (int i = 0; i < 17; i++)
     {
@@ -587,8 +587,8 @@ void explosion()
 }
 
 
-void findChangingBomb(double current_time)
-{
+void findChangingBomb(double current_time)      // 바뀌는 봄브 즉 터지지 않은 봄브를 찾아
+{                                               // 다음 봄브로 바뀌게 하는 함수
     for (int i = 0; i < 17; i++)
     {
         for (int j = 0; j < 17; j++)
@@ -647,12 +647,12 @@ void findChangingBomb(double current_time)
     }
 }
 
-void SetCurrentCursorPos(int x, int y)
+void SetCurrentCursorPos(int x, int y)      // 커서 위치를 세팅하는 함수
 {
     COORD position = { x, y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), position);
 }
-COORD GetCurrentCursorPos(void)
+COORD GetCurrentCursorPos(void)             // 커서 위치를 얻어내는 함수
 {
     COORD curPoint;
     CONSOLE_SCREEN_BUFFER_INFO curInfo;
@@ -661,7 +661,7 @@ COORD GetCurrentCursorPos(void)
     curPoint.Y = curInfo.dwCursorPosition.Y;
     return curPoint;
 }
-void RemoveCursor(void)
+void RemoveCursor(void)             // 커서를 안보이게 하는 함수
 
 {
 
@@ -676,33 +676,33 @@ void RemoveCursor(void)
 }
 
 //한강섭
-int abs(int n) {
+int abs(int n) {                    // 절댓값 얻는 함수
     if (n < 0) return n * -1;
     else return n;
 }
 
-void setpc(int y, int x) {
+void setpc(int y, int x) {              // pc 위치를 설정하는 함수
     pc->pos.Y = y;
     pc->pos.X = x;
     gameBoardInfo[y][x] = 400;
     return;
 }
-void setnpc_pattern(int i, int y, int x) {
+void setnpc_pattern(int i, int y, int x) {      // npc1 위치를 설정하는 함수
     npc_pattern[i].live = TRUE;
     npc_pattern[i].pos.Y = y;
     npc_pattern[i].pos.X = x;
     gameBoardInfo[y][x] = 500;
     return;
 }
-void setnpc_nopattern(int i, int y, int x) {
-    npc_pattern[i].live = TRUE;
+void setnpc_nopattern(int i, int y, int x) {        // npc2 위치를 설정하는 함수
+    npc_pattern[i].live = TRUE; 
     npc_nopattern[i].pos.Y = y;
     npc_nopattern[i].pos.X = x;
     gameBoardInfo[y][x] = 501;
     return;
 }
 
-int DetectpcCollision(int y, int x) {
+int DetectpcCollision(int y, int x) {           // 물줄기의 부딪힘을 탐지하는 함수
     if (gameBoardInfo[y][x] == 0) return 0;//아무것도 없는 곳이니깐 움직인다
     else if (gameBoardInfo[y][x] == 500 || gameBoardInfo[y][x] == 501) { //다음 위치가 npc랑 만나는 위치일때
         MainCharacter.hp--;
@@ -755,7 +755,7 @@ int DetectnpcCollision(int y, int x) {
     else return 1; //막혀있을 때
 }
 
-void move_pc(int y, int x) {
+void move_pc(int y, int x) {        // pc를 움직이게 하는 함수
     int isDetect = DetectpcCollision(pc->pos.Y + y, pc->pos.X + x);
     if (isDetect == 1) return;
     gameBoardInfo[pc->pos.Y][pc->pos.X] = 0;
@@ -766,7 +766,7 @@ void move_pc(int y, int x) {
     drawingTotalMap();
     return;
 }
-void move_pattern_npc() {
+void move_pattern_npc() {       // npc1의 움직임을 담당하는 함수
     for (int i = 0; i < cnt_npc_pattern; i++)
     {
         if (!npc_pattern[i].live) continue;
@@ -833,7 +833,7 @@ void move_pattern_npc() {
     }
     return;
 }
-void move_nopattern_npc() {
+void move_nopattern_npc() {         // npc2의 움직임을 담당하는 함수
     for (int i = 0; i < cnt_npc_nopattern; i++)
     {
         if (!npc_nopattern[i].live) continue; //살아있는 것만 작동시킨다.
@@ -902,7 +902,7 @@ void move_nopattern_npc() {
     return;
 }
 //npc가 모두 죽을떄
-BOOLEAN npc_alldiecheck() {
+BOOLEAN npc_alldiecheck() {         // npc가 모두 죽었는지 확인하는 함수
     int flag = 0;
     for (int i = 0; i < cnt_npc_nopattern; i++) {
         if (npc_nopattern[i].live) flag = 1;
@@ -913,7 +913,7 @@ BOOLEAN npc_alldiecheck() {
     if (flag == 0) return TRUE;
     else return FALSE;
 }
-int countnpc() {
+int countnpc() {                    // npc의 수를 세는 함수
     int cnt = 0;
     for (int i = 0; i < cnt_npc_nopattern; i++) {
         if (npc_nopattern[i].live)cnt++;
@@ -925,7 +925,7 @@ int countnpc() {
 }
 //나중에 pc체력이 0일때도 작성
 //보스 공격 할 거 만들어 논거
-void spawntutorialnpc() {
+void spawntutorialnpc() {           // 튜토리얼때 npc가 나오게 하는 함수
     cnt_npc_nopattern = 1;
     cnt_npc_pattern = 1;
     npc_pattern = malloc(sizeof(NPC_pos_pattern) * cnt_npc_pattern);
@@ -958,7 +958,7 @@ void spawnnpc(int n) { //n*2개의 npc 만큼 랜덤한 장소에 소환
     }
     return;
 }
-void addspawnnpc(int n) {
+void addspawnnpc(int n) {       // npc를 추가하는 함수
     int y, x;
     cnt_npc_pattern += n;
     cnt_npc_nopattern += n;
@@ -998,7 +998,7 @@ void addspawnnpc(int n) {
     drawingTotalMap();
     return;
 }
-void deletenpc() {
+void deletenpc() {          // npc를 탐지하는 함수
     int x, y;
     for (y = 0; y < GBOARD_HEIGHT + 2; y++)
     {
@@ -1030,7 +1030,7 @@ void spawnbomb(int n) {//n개의 물풍선을 랜덤한 장소에 소환
     }
     return;
 }
-void spawnbossweak(int n) {
+void spawnbossweak(int n) {     // 보스의 약점 블록을 생성하는 함수
     int y, x;
     for (int i = 0; i < n; i++) {
         while (1) {
@@ -1042,7 +1042,7 @@ void spawnbossweak(int n) {
     }
     return;
 }
-void deletebossweak() {
+void deletebossweak() {     // 보스의 약점 블록을 때렸는지 확인하는 함수
     int x, y;
     for (y = 0; y < GBOARD_HEIGHT + 2; y++)
     {
@@ -1055,7 +1055,7 @@ void deletebossweak() {
     }
     return;
 }
-void npcspeedup() {
+void npcspeedup() {                     // npc의 속도를 높이는 함수
     if (npcspeed <= 0) return;
     npcspeed--;
     return;
@@ -1064,7 +1064,7 @@ void npcspeedup() {
 int flag = 1; //boss 단계 구분하는 flag
 int before_key;
 int e = 0; //공격이랑 npc속도 관련
-void ProcessKeyInput() {
+void ProcessKeyInput() {                // 키의 입력을 받는 함수
     int key;
 
     for (int i = 0; i < 20; i++) {
@@ -1148,11 +1148,10 @@ void ProcessKeyInput() {
 }
 int main() {
     int key, i, j;
-    settingUiInit();
+    settingUiInit();                // UI를 세팅한다.
     srand(time(NULL));
-    RemoveCursor();
-    //drawingTotalMap(); // 이거 왜있는거죠? 주석처리 할게용 메뉴 만들때 오류남
-    Sleep(1000); // 얘도 왜있는거지 ㅇㄴ
+    RemoveCursor();                 // 커서를 지운다.
+    Sleep(1000);
     pc = malloc(sizeof(PC_pos));
 
     while (1) {
@@ -1251,10 +1250,10 @@ int main() {
     return 0;
 }
 
-void settingUiInit() {
+void settingUiInit() {          // UI를 세팅하는 함수 (아직 필요없지만 후의 버전 증가때를 위해)
 }
 
-void drawingTotalMap() {
+void drawingTotalMap() {        // MAP을 모두 그려준다.
     printGameBoard();
     printHeroHp();
     drawBombNumUI();
@@ -1262,7 +1261,7 @@ void drawingTotalMap() {
     drawNpcHP();
 }
 
-void printGameBoard() {
+void printGameBoard() {     // 게임 보드를 그린다.
     int x, y;
     int cursX, cursY;
 
@@ -1691,7 +1690,7 @@ void printGameBoard() {
     }
 }
 
-void printHeroHp() {
+void printHeroHp() {        // PC의 HP를 그린다.
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y);
     if (MainCharacter.hp == 6) {
         printf("플레이어 HP : ■■■■■■");
@@ -1716,7 +1715,7 @@ void printHeroHp() {
     }
 }
 
-void drawBombNumUI() {
+void drawBombNumUI() {      // 폭탄 갯수를 그린다.
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 2);
     if (MainCharacter.plusBombNumItem == 1) {
         printf("최대 물폭탄 개수 : ■□□□□□□□□□");
@@ -1750,7 +1749,7 @@ void drawBombNumUI() {
     }
 }
 
-void drawPowerUI() {
+void drawPowerUI() {        // 화력의 크기를 그린다.
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 4);
     if (MainCharacter.plusBombPowerItem == 2) {
         printf("물폭탄 화력 : ■□□□□□□□□□");
@@ -1784,7 +1783,7 @@ void drawPowerUI() {
     }
 }
 
-void drawNpcHP() {
+void drawNpcHP() {      // NPC의 체력 즉 보스의 체력을 그린다.
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 6);
 
     if (stageNum == 4) {
@@ -1828,7 +1827,7 @@ void drawNpcHP() {
     SetCurrentCursorPos(STATUS_MENU_WINDOW_X, STATUS_MENU_WINDOW_Y + 8);
     printf(" %d Stage", stageNum);
 }
-int nextStage() {
+int nextStage() {       // 다음 스테이지로 넘어가는 함수
     int i, j;
 
     stageNum++;
@@ -1886,7 +1885,7 @@ int nextStage() {
     return 1;
 }
 
-void drawingGameMenu() {
+void drawingGameMenu() {        // 게임 메뉴를 그린다.
     if (curMenu == 0) {
         SetCurrentCursorPos(50, 10);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RED);
@@ -1906,15 +1905,15 @@ void drawingGameMenu() {
 
 }
 
-void menuUp() {
+void menuUp() {     // 게임 메뉴 위쪽 방향키 눌렀을때
     curMenu = 0;
 }
 
-void menuDown() {
+void menuDown() {       // 게임 메뉴 아래 방향키 눌렀을때
     curMenu = 1;
 }
 
-void erazeWindow() {
+void erazeWindow() {        // 콘솔창을 꺠끗하게 비워주는 함수
     int x, y;
     int cursX, cursY;
 
