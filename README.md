@@ -91,7 +91,7 @@ bomberman.exe
 - [물폭탄 시스템 상세 설명](docs/bomb-system.md) - 시간 테이블 기반 물폭탄 구현에 대한 기술적 설명
 - [렌더링 시스템 분석](docs/rendering.md) - 콘솔 렌더링과 현대적 UI 라이브러리 비교 분석
 - [NPC AI 구현 상세](docs/npc-ai.md) - 두 가지 유형의 NPC AI 알고리즘 설명
-- [발표 자료 (PDF)](water-bomb%20소개%20및%20함수구현.pdf) - 프로젝트 설명 PPT 자료
+- [게임 소개(PDF)](water-bomb%20소개%20및%20함수구현.pdf) - 프로젝트 설명 PPT 자료
 
 ## 시연영상
 
