@@ -54,11 +54,12 @@ Windows Console API를 활용한 렌더링 시스템은 현대적인 UI 라이�
 
 ```
 bomberman/
-├── main.c           # 게임 메인 로직
-├── README.md        # 프로젝트 설명
+├── main.c              # 게임 메인 로직
+├── README.md           # 프로젝트 설명
 └── docs/
-    ├── bomb.md      # 물폭탄 시스템 상세 설명
-    └── rendering.md # 렌더링 시스템 분석
+    ├── bomb-system.md  # 물폭탄 시스템 상세 설명
+    ├── rendering.md    # 렌더링 시스템 분석
+    └── npc-ai.md       # NPC AI 시스템 분석
 ```
 
 ## 💻 빌드 및 실행
