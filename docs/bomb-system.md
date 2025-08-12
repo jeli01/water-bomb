@@ -91,52 +91,33 @@ void findChangingBomb(double current_time) {
 폭탄이 최종 상태(`BombOne2`)에 도달하면, `explosion()` 함수가 폭발을 처리합니다:
 
 ```c
-void explosion() {
-    // 기존 물줄기 제거
-    for (int i = 0; i < 17; i++) {
-        for (int j = 0; j < 17; j++) {
-            if (isWaterLine(i, j) == 1) {
-                gameBoardInfo[i][j] = 0;
-            }
-        }
-    }
-
-    // 폭발할 폭탄 찾기
-    for (int i = 0; i < 17; i++) {
-        for (int j = 0; j < 17; j++) {
-            if (isFinalBomb(i, j) == 1) {
-                MainCharacter.bombNum--;
-                gameBoardInfo[i][j] = BombZero;
-                
-                // 네 방향으로 폭발 확산
-                // 동쪽 방향 예시:
-                for (int x = 1; x < MainCharacter.plusBombPowerItem; x++) {
-                    // 장애물 체크 및 물줄기 전파
-                    if (detectBossWeakBlock(i, j + x) == 1) {
-                        // 보스 약점 공격
-                    }
-                    else if ((detectCharacter(i, j + x) == 0 && 
-                             (detectBlock(i, j + x) == 0) && 
-                             gameBoardInfo[i][j + x] == 0) || 
-                             gameBoardInfo[i][j + x] == BlockWeak) {
-                        // 물줄기 전파 또는 약한 블록 파괴
-                    }
-                    else break;
+// 폭발할 폭탄 찾기
+for (int i = 0; i < 17; i++) {
+    for (int j = 0; j < 17; j++) {
+        if (isFinalBomb(i, j) == 1) {
+            MainCharacter.bombNum--;
+            gameBoardInfo[i][j] = BombZero;
+            
+            // 네 방향으로 폭발 확산
+            // 동쪽 방향 예시:
+            for (int x = 1; x < MainCharacter.plusBombPowerItem; x++) {
+                // 장애물 체크 및 물줄기 전파
+                if (detectBossWeakBlock(i, j + x) == 1) {
+                    // 보스 약점 공격
                 }
-                // 서, 남, 북 방향도 유사하게 처리
+                else if ((detectCharacter(i, j + x) == 0 && 
+                         (detectBlock(i, j + x) == 0) && 
+                         gameBoardInfo[i][j + x] == 0) || 
+                         gameBoardInfo[i][j + x] == BlockWeak) {
+                    // 물줄기 전파 또는 약한 블록 파괴
+                }
+                else break;
             }
+            // 서, 남, 북 방향도 유사하게 처리
         }
     }
 }
 ```
-
-## 메모리 효율성
-
-이 시스템의 주목할만한 특징은 메모리 효율성입니다:
-
-- 폭탄 객체를 별도로 생성하지 않음
-- 기존 게임 보드 구조를 활용
-- 추가 메모리 오버헤드가 최소화됨
 
 ## 결론
 
